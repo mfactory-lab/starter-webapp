@@ -1,6 +1,6 @@
 import type { QuasarPluginOptions } from 'quasar'
+import { Dark, Dialog, Loading, LocalStorage, Notify, Quasar } from 'quasar'
 import iconSet from 'quasar/icon-set/svg-eva-icons.js'
-import { Dark, Loading, LocalStorage, Notify, Quasar } from 'quasar'
 import type { UserModule } from '~/types'
 
 export const install: UserModule = ({ isClient, app }) => {
@@ -10,6 +10,7 @@ export const install: UserModule = ({ isClient, app }) => {
 
   app.use(Quasar, {
     plugins: {
+      Dialog,
       Notify,
       LocalStorage,
       Dark,

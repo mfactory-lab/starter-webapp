@@ -1,16 +1,17 @@
 import { resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
+import Layouts from 'vite-plugin-vue-layouts'
+import WebfontDownload from 'vite-plugin-webfont-dl'
+import generateSitemap from 'vite-ssg-sitemap'
+import { VitePWA } from 'vite-plugin-pwa'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import VueRouter from 'unplugin-vue-router/vite'
-import Layouts from 'vite-plugin-vue-layouts'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import { FileSystemIconLoader } from 'unplugin-icons/loaders'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
-import generateSitemap from 'vite-ssg-sitemap'
-import { VitePWA } from 'vite-plugin-pwa'
 import { quasar } from '@quasar/vite-plugin'
 import { unheadVueComposablesImports } from '@unhead/vue'
 import UnheadVite from '@unhead/addons/vite'
@@ -19,7 +20,7 @@ import { version } from './package.json'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd())
-  const baseUrl = env.VITE_BASE_URL ?? '/'
+  const baseUrl = env.VITE_BASE_URL || '/'
 
   return {
     base: baseUrl,
@@ -37,14 +38,15 @@ export default defineConfig(({ mode, isSsrBuild }) => {
     plugins: [
       Vue(),
 
-      // https://github.com/unjs/unhead
-      UnheadVite({ treeshake: { enabled: true } }),
-
       // https://github.com/posva/unplugin-vue-router
       VueRouter({
         extensions: ['.vue', '.md'],
+        exclude: ['src/pages/README.md'],
         dts: 'types/typed-router.d.ts',
       }),
+
+      // https://github.com/unjs/unhead
+      UnheadVite({ treeshake: { enabled: true } }),
 
       // https://github.com/JohnCampionJr/vite-plugin-vue-layouts
       Layouts(),
@@ -71,6 +73,9 @@ export default defineConfig(({ mode, isSsrBuild }) => {
           {
             // 'i18next-vue': ['useTranslation'],
             'vue-router/auto': ['useLink'],
+            'quasar': [
+              'useQuasar',
+            ],
           },
         ],
         dts: 'types/auto-imports.d.ts',
@@ -90,45 +95,58 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         ],
       }),
 
+      // https://github.com/quasarframework/quasar
+      quasar({
+        autoImportComponentCase: 'kebab',
+        sassVariables: './src/assets/styles/variables.scss',
+        runMode: isSsrBuild ? 'ssr-server' : 'web-client',
+      }),
+
+      // https://github.com/feat-agency/vite-plugin-webfont-dl
+      WebfontDownload(),
+
       // https://github.com/antfu/vite-plugin-pwa
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
+        includeAssets: ['favicon.ico', 'favicon.svg', 'favicon-dark.svg', 'safari-pinned-tab.svg'],
         manifest: {
           name: 'Jpool',
           short_name: 'Jpool',
           theme_color: '#ffffff',
           icons: [
             {
-              src: `${baseUrl}pwa-192x192.png`,
+              src: `pwa-192x192.png`,
               sizes: '192x192',
               type: 'image/png',
             },
             {
-              src: `${baseUrl}pwa-512x512.png`,
+              src: `pwa-512x512.png`,
               sizes: '512x512',
               type: 'image/png',
             },
             {
-              src: `${baseUrl}pwa-512x512.png`,
-              sizes: '512x512',
-              type: 'image/png',
+              src: `favicon.svg`,
+              sizes: '165x165',
+              type: 'image/svg',
               purpose: 'any maskable',
             },
           ],
         },
       }),
 
-      // https://github.com/quasarframework/quasar
-      quasar({
-        autoImportComponentCase: 'kebab',
-        sassVariables: './src/assets/styles/_variables.scss',
-        runMode: isSsrBuild ? 'ssr-server' : 'web-client',
-      }),
+      // // https://github.com/unplugin/unplugin-imagemin
+      // Imagemin({
+      //   // beforeBundle: true,
+      //   conversion: [
+      //     { from: 'jpeg', to: 'webp' },
+      //     { from: 'png', to: 'webp' },
+      //     { from: 'JPG', to: 'jpeg' },
+      //   ],
+      // }),
 
-      // // https://github.com/feat-agency/vite-plugin-webfont-dl
-      // WebfontDownload(),
-      //
+      // // https://github.com/davidmyersdev/vite-plugin-node-polyfills
+      // nodePolyfills(),
+
       // // https://github.com/webfansplz/vite-plugin-vue-devtools
       // VueDevTools(),
     ],
@@ -139,7 +157,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         'vue-router',
         '@unhead/vue',
         '@vueuse/core',
-        // 'quasar',
+        'quasar',
       ],
     },
 
@@ -167,8 +185,10 @@ export default defineConfig(({ mode, isSsrBuild }) => {
     test: {
       include: ['test/**/*.test.ts'],
       environment: 'jsdom',
-      deps: {
-        inline: ['@vue', '@vueuse'],
+      server: {
+        deps: {
+          inline: ['@vue', '@vueuse'],
+        },
       },
     },
   }
