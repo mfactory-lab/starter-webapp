@@ -1,0 +1,39 @@
+$primary: #28414c;
+$secondary: #ffcb25;
+$accent: #008dcd;
+$positive: #239f90;
+$negative: #e33b3b;
+$info: $accent;
+$warning: $secondary;
+
+$gray: #425b66;
+$dark-green: #007c6d;
+$light-green: #1ce4b0;
+$almost-white: #fafafa;
+
+$gray-2: #6f8087;
+$gray-3: #8c9ca7;
+$gray-4: #d6dbdf;
+$dark: #1d1d1d;
+$dark-gray: #383838;
+$light-gray: #9eb3bd;
+$light-gray-natural: #e9e9e9;
+$gray-inactive: #cfcfcf;
+$text-white: white;
+$transparent: #00000000;
+
+// Dark mode
+$dark: $primary;
+$dark-page: $primary;
+$dark-secondary: $gray;
+
+$button-padding: 9px 17px;
+$button-border-radius: 8px;
+
+$font-secondary: 'Montserrat';
+
+$tooltip-background: $gray;
+
+$border-radius: 6px;
+$border-radius-sm: 4px;
+$border-radius-xs: 3px;

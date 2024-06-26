@@ -1,0 +1,19 @@
+@import 'components';
+@import 'variables';
+@import 'vendors';
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.q-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.q-page-container {
+  flex: 1;
+  width: 100%;
+}
