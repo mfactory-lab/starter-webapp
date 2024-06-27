@@ -10,17 +10,17 @@ enum NotifyType {
 
 const { notify } = useQuasar()
 
-function notifyHandler(type: NotifyType, progress = false) {
+function notifyHandler(notifyType: NotifyType, progress = false) {
   notify({
-    type,
+    type: notifyType,
     progress,
-    color: type,
-    message: notifyLabel(type),
+    color: notifyType,
+    message: notifyLabel(notifyType),
   })
 }
 
-function notifyLabel(type: NotifyType) {
-  switch (type) {
+function notifyLabel(notifyType: NotifyType) {
+  switch (notifyType) {
     case NotifyType.Positive: return 'Trigger \'positive\''
     case NotifyType.Negative: return 'Trigger \'negative\''
     case NotifyType.Warning: return 'Trigger \'warning\''

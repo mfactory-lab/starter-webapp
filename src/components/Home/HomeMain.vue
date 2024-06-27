@@ -6,7 +6,7 @@ enum Tabs {
   Routes = 'Routes',
 }
 
-const tab = ref(Tabs.Components)
+const tab = useStorage('active-tab', Tabs.Components)
 </script>
 
 <template>
