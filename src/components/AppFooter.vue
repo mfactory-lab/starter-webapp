@@ -1,5 +1,5 @@
 <template>
   <footer class="container">
-    Footer
+    Developed by Albus Team
   </footer>
 </template>

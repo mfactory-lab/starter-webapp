@@ -1,66 +1,24 @@
 <script setup lang="ts">
-const model = ref(null)
-const options = ref(['Option 1', 'Option 2', 'Option 3'])
 
-const $q = useQuasar()
-
-function alert() {
-  $q.dialog({
-    title: 'Alert',
-    message: 'Some message',
-  })
-}
-
-function confirm() {
-  $q.dialog({
-    title: 'Confirm',
-    message: 'Would you like to turn on the wifi?',
-    cancel: true,
-    persistent: true,
-  })
-}
-
-function prompt() {
-  $q.dialog({
-    title: 'Prompt',
-    message: 'What is your name?',
-    prompt: {
-      model: '',
-      type: 'text', // optional
-    },
-    cancel: true,
-    persistent: true,
-  })
-}
 </script>
 
 <template>
   <div class="home-page container">
     <h2>Starter Webapp</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>
+      This application provides a ready-made foundation with Quasar component examples and configurations for your project. Quasar is a powerful tool for developing versatile web applications using Vue.js. In our starter application, you’ll find:
 
-    <br>
+      <ul>
+        <li>Configured project settings including network configurations and styles.</li>
+        <li>Examples of using Quasar components such as buttons, tables, forms, and more.</li>
+        <li>A structured project setup where you can start adding your own pages and functionality.</li>
+        <li>Configured tsconfig.json and eslint files to ensure type safety and code standardization in line with modern development practices.</li>
+        <li>Routing based on the latest technologies and best practices, ensuring efficient navigation and state management.</li>
+      </ul>
 
-    <q-btn-group>
-      <q-btn color="primary">
-        Action
-      </q-btn>
-      <q-btn color="secondary" href="hi/test">
-        Hi page
-      </q-btn>
-    </q-btn-group>
+      This application will help you kickstart your development, bypassing initial setup and component integration steps. We hope it becomes a reliable foundation for your project!
+    </p>
 
-    <br>
-
-    <h4>Dialogs</h4>
-    <q-btn-group>
-      <q-btn label="Alert" color="primary" @click="alert" />
-      <q-btn label="Confirm" color="primary" @click="confirm" />
-      <q-btn label="Prompt" color="primary" @click="prompt" />
-    </q-btn-group>
-
-    <br>
-
-    <q-select v-model="model" :options="options" />
+    <home-main />
   </div>
 </template>

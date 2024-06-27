@@ -1,4 +1,9 @@
 footer {
-  height: 80px;
+  height: 40px;
   width: 100%;
+  background-color: $primary;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  margin-top: 40px !important;
 }
