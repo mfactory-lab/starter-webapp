@@ -32,7 +32,8 @@ export default antfu(
       'style/brace-style': ['error', '1tbs', { allowSingleLine: true }],
       'toml/padding-line-between-pairs': 'off',
       'ts/consistent-type-definitions': ['error', 'type'],
-      'vue/component-name-in-template-casing': ['error', 'kebab-case'],
+      // only allow kebab-case in component names
+      'vue/component-name-in-template-casing': [2, 'kebab-case', { registeredComponentsOnly: false }],
     },
   },
 )
