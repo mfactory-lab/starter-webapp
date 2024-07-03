@@ -9,7 +9,7 @@ import './assets/styles/main.scss'
 export const createApp = ViteSSG(
   App,
   {
-    strict: true,
+    // strict: true,
     base: import.meta.env.BASE_URL,
     routes: setupLayouts(routes),
   },

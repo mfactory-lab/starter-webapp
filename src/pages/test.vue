@@ -1,5 +1,11 @@
 <script setup lang="ts">
 const router = useRouter()
+
+definePage({
+  meta: {
+    layout: 'empty',
+  },
+})
 </script>
 
 <template>
@@ -15,8 +21,3 @@ const router = useRouter()
     </div>
   </div>
 </template>
-
-<route lang="yaml">
-meta:
-  layout: empty
-</route>

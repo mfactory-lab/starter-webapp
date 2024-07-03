@@ -5,7 +5,7 @@
 <template>
   <div class="home-page container">
     <h2>Starter Webapp</h2>
-    <p>
+    <div class="q-my-lg">
       This application provides a ready-made foundation with Quasar component examples and configurations for your project. Quasar is a powerful tool for developing versatile web applications using Vue.js. In our starter application, you’ll find:
 
       <ul>
@@ -17,7 +17,7 @@
       </ul>
 
       This application will help you kickstart your development, bypassing initial setup and component integration steps. We hope it becomes a reliable foundation for your project!
-    </p>
+    </div>
 
     <home-main />
   </div>
