@@ -1,27 +1,14 @@
-@import 'fonts';
 @import 'variables';
+@import 'mixins';
+@import 'fonts';
 @import 'vendors';
 @import 'components';
+@import 'common';
 
 .container {
   max-width: 1400px;
   padding: 0 20px;
   margin: 0 auto;
-}
-
-.q-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.q-page-container {
-  flex: 1;
-  width: 100%;
-}
-
-.q-btn {
-  border-radius: $border-radius;
 }
 
 .components-wrapper {
