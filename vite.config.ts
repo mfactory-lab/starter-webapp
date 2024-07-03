@@ -1,4 +1,6 @@
 import { resolve } from 'node:path'
+import * as path from 'node:path'
+import * as fs from 'node:fs'
 import { defineConfig, loadEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import Layouts from 'vite-plugin-vue-layouts'
@@ -195,6 +197,21 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         generateSitemap({
           hostname: env.VITE_APP_URL ?? 'http://localhost/',
         })
+
+        // Apply base path to all HTML files
+        if (base) {
+          const distDir = path.resolve(__dirname, 'dist')
+          const files = fs.readdirSync(distDir)
+          files.forEach((file) => {
+            if (file.endsWith('.html')) {
+              const filePath = path.join(distDir, file)
+              let content = fs.readFileSync(filePath, 'utf-8')
+              content = content.replace(/(href|src)="\/([^"]*)"/g, `$1="${base}$2"`)
+              content = content.replace(/(url\()\/([^)]*)/g, `$1${base}$2`)
+              fs.writeFileSync(filePath, content, 'utf-8')
+            }
+          })
+        }
       },
     },
 
