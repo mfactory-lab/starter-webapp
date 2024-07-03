@@ -2,12 +2,12 @@ import { resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import Layouts from 'vite-plugin-vue-layouts'
-import WebfontDownload from 'vite-plugin-webfont-dl'
-import generateSitemap from 'vite-ssg-sitemap'
 import { VitePWA } from 'vite-plugin-pwa'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import WebfontDownload from 'vite-plugin-webfont-dl'
 import VueRouter from 'unplugin-vue-router/vite'
+import Imagemin from 'unplugin-imagemin/vite'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import { FileSystemIconLoader } from 'unplugin-icons/loaders'
@@ -15,15 +15,16 @@ import { VueRouterAutoImports } from 'unplugin-vue-router'
 import { quasar } from '@quasar/vite-plugin'
 import { unheadVueComposablesImports } from '@unhead/vue'
 import UnheadVite from '@unhead/addons/vite'
+import generateSitemap from 'vite-ssg-sitemap'
 import { version } from './package.json'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd())
-  const baseUrl = env.VITE_BASE_URL || '/'
+  const base = env.VITE_BASE_URL || '/'
 
   return {
-    base: baseUrl,
+    base,
 
     resolve: {
       alias: {
@@ -49,18 +50,27 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       UnheadVite({ treeshake: { enabled: true } }),
 
       // https://github.com/JohnCampionJr/vite-plugin-vue-layouts
-      Layouts(),
+      Layouts({
+        importMode(name) {
+          return name === 'home' ? 'sync' : 'async'
+        },
+      }),
 
       // https://github.com/antfu/unplugin-icons
       Icons({
         compiler: 'vue3',
         autoInstall: true,
-        customCollections: {
-          app: FileSystemIconLoader(
-            './src/assets/img/icons',
-            svg => svg.replace(/^<svg /, '<svg fill="currentColor" '),
-          ),
+        transform(svg) {
+          return svg.replace(/^<svg /, '<svg fill="currentColor" ')
         },
+        customCollections: {
+          app: FileSystemIconLoader('./src/assets/img/icons'),
+        },
+        // iconCustomizer(collection, icon, props) {
+        //   if (collection === 'app') {
+        //     props.class = 'app-icon'
+        //   }
+        // },
       }),
 
       // https://github.com/antfu/unplugin-auto-import
@@ -108,7 +118,12 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       // https://github.com/antfu/vite-plugin-pwa
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'favicon.svg', 'favicon-dark.svg', 'safari-pinned-tab.svg'],
+        workbox: {
+          navigateFallback: '404.html',
+          offlineGoogleAnalytics: true,
+        },
+        includeAssets: ['/*.{ico,svg,png}'],
+        // includeAssets: ['favicon.ico', 'favicon.svg', 'favicon-dark.svg', 'safari-pinned-tab.svg'],
         manifest: {
           name: 'Jpool',
           short_name: 'Jpool',
@@ -134,15 +149,10 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         },
       }),
 
-      // // https://github.com/unplugin/unplugin-imagemin
-      // Imagemin({
-      //   // beforeBundle: true,
-      //   conversion: [
-      //     { from: 'jpeg', to: 'webp' },
-      //     { from: 'png', to: 'webp' },
-      //     { from: 'JPG', to: 'jpeg' },
-      //   ],
-      // }),
+      // https://github.com/unplugin/unplugin-imagemin
+      Imagemin({
+        beforeBundle: true,
+      }),
 
       // // https://github.com/davidmyersdev/vite-plugin-node-polyfills
       // nodePolyfills(),
@@ -157,7 +167,9 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         'vue-router',
         '@unhead/vue',
         '@vueuse/core',
-        'quasar',
+      ],
+      exclude: [
+        'vue-demi',
       ],
     },
 
@@ -165,21 +177,30 @@ export default defineConfig(({ mode, isSsrBuild }) => {
     ssgOptions: {
       script: 'async',
       formatting: 'minify',
+      concurrency: 25,
       crittersOptions: {
+        preload: 'swap',
+        pruneSource: true,
         reduceInlineStyles: false,
+        inlineFonts: false,
+        preloadFonts: false,
+      },
+      base: '/',
+      includedRoutes(paths) {
+        const staticPaths = paths.filter(path => !path.includes(':'))
+        const dynamicPaths = [] as string[]
+        return [...staticPaths, ...dynamicPaths, '/404']
       },
       onFinished() {
         generateSitemap({
-          // TODO: fix
-          // hostname: VITE_BASE_URL ?? '/',
+          hostname: env.VITE_APP_URL ?? 'http://localhost/',
         })
       },
     },
 
-    ssr: {
-      // TODO: workaround until they support native ESM
-      noExternal: ['workbox-window'],
-    },
+    // ssr: {
+    //   noExternal: ['workbox-window'],
+    // },
 
     // https://github.com/vitest-dev/vitest
     test: {
@@ -187,7 +208,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       environment: 'jsdom',
       server: {
         deps: {
-          inline: ['@vue', '@vueuse'],
+          inline: ['@vue', '@vueuse', 'vue-demi'],
         },
       },
     },
