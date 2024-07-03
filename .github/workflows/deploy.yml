@@ -45,8 +45,7 @@ jobs:
 
       - name: Build app
         run: |
-          pnpm run build:ssg
-          cp dist/index.html dist/404.html
+          pnpm run build:ssg --mode gh
           touch dist/.nojekyll
 
       - name: Setup Pages
