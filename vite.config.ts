@@ -120,7 +120,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       VitePWA({
         registerType: 'autoUpdate',
         workbox: {
-          navigateFallback: '/404.html',
+          navigateFallback: '404.html',
           globPatterns: ['**/*.{js,css,webp,png,svg,gif,mp4,ico,woff2}'],
         },
         includeAssets: ['**/*.{webp,png,jpg,svg,gif,ico,txt,woff2}'],
@@ -132,17 +132,17 @@ export default defineConfig(({ mode, isSsrBuild }) => {
           display: 'minimal-ui',
           icons: [
             {
-              src: '/pwa-192x192.png',
+              src: 'pwa-192x192.png',
               sizes: '192x192',
               type: 'image/png',
             },
             {
-              src: '/pwa-512x512.png',
+              src: 'pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png',
             },
             {
-              src: '/favicon.svg',
+              src: 'favicon.svg',
               sizes: '50x50',
               type: 'image/svg',
               purpose: 'any maskable',
