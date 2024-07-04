@@ -4,10 +4,10 @@ const primaryColor = '#28414c'
 const baseURL = import.meta.env.BASE_URL || '/'
 
 useHead({
-  title: 'Starter Webapp',
+  title: import.meta.env.VITE_APP_NAME || 'Starter',
   meta: [
-    { name: 'description', content: '' },
-    { name: 'keywords', content: '' },
+    { name: 'description', content: import.meta.env.VITE_APP_DESCRIPTION },
+    { name: 'keywords', content: import.meta.env.VITE_APP_KEYWORDS },
     {
       name: 'theme-color',
       content: () => isDark.value ? primaryColor : '#ffffff',

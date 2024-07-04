@@ -120,29 +120,30 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       VitePWA({
         registerType: 'autoUpdate',
         workbox: {
-          navigateFallback: '404.html',
-          offlineGoogleAnalytics: true,
+          navigateFallback: '/404.html',
+          globPatterns: ['**/*.{js,css,webp,png,svg,gif,mp4,ico,woff2}'],
         },
-        includeAssets: ['/*.{ico,svg,png}'],
-        // includeAssets: ['favicon.ico', 'favicon.svg', 'favicon-dark.svg', 'safari-pinned-tab.svg'],
+        includeAssets: ['**/*.{webp,png,jpg,svg,gif,ico,txt,woff2}'],
         manifest: {
-          name: 'Jpool',
-          short_name: 'Jpool',
+          name: env.VITE_APP_NAME ?? 'Starter',
+          short_name: env.VITE_APP_SHORT_NAME ?? env.VITE_APP_NAME ?? 'Starter',
+          description: env.VITE_APP_DESCRIPTION,
           theme_color: '#ffffff',
+          display: 'minimal-ui',
           icons: [
             {
-              src: `pwa-192x192.png`,
+              src: '/pwa-192x192.png',
               sizes: '192x192',
               type: 'image/png',
             },
             {
-              src: `pwa-512x512.png`,
+              src: '/pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png',
             },
             {
-              src: `favicon.svg`,
-              sizes: '165x165',
+              src: '/favicon.svg',
+              sizes: '50x50',
               type: 'image/svg',
               purpose: 'any maskable',
             },
@@ -183,8 +184,6 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         preload: 'swap',
         pruneSource: true,
         reduceInlineStyles: false,
-        inlineFonts: false,
-        preloadFonts: false,
       },
       includedRoutes(paths) {
         const staticPaths = paths.filter(path => !path.includes(':'))
