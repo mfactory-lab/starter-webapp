@@ -1,4 +1,5 @@
-import { resolve } from 'node:path'
+import path, { resolve } from 'node:path'
+import fs from 'node:fs'
 import { defineConfig, loadEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import Layouts from 'vite-plugin-vue-layouts'
@@ -190,24 +191,30 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         const dynamicPaths = [] as string[]
         return [...staticPaths, ...dynamicPaths, '/404']
       },
+      onPageRendered(_, renderedHTML) {
+        // support critters with base path
+        if (base !== '/') {
+          const srcDir = path.resolve('./dist')
+          const destDir = path.join('./dist', base)
+          fs.mkdirSync(destDir, { recursive: true })
+          fs.readdirSync(srcDir).forEach((item) => {
+            if (item !== path.basename(base)) {
+              const srcPath = path.join(srcDir, item)
+              const destPath = path.join(destDir, item)
+              fs.cpSync(srcPath, destPath, { recursive: true })
+            }
+          })
+        }
+        return renderedHTML
+      },
       onFinished() {
         generateSitemap({
           hostname: env.VITE_APP_URL ?? 'http://localhost/',
         })
-        // Apply base path to all HTML files
-        // if (base) {
-        //   const distDir = path.resolve(__dirname, 'dist')
-        //   const files = fs.readdirSync(distDir)
-        //   files.forEach((file) => {
-        //     if (file.endsWith('.html')) {
-        //       const filePath = path.join(distDir, file)
-        //       let content = fs.readFileSync(filePath, 'utf-8')
-        //       content = content.replace(/(href|src)="\/([^"]*)"/g, `$1="${base}$2"`)
-        //       content = content.replace(/(url\()\/([^)]*)/g, `$1${base}$2`)
-        //       fs.writeFileSync(filePath, content, 'utf-8')
-        //     }
-        //   })
-        // }
+        // support critters with base path
+        if (base !== '/') {
+          fs.rmSync(path.join('./dist', base), { recursive: true, force: true })
+        }
       },
     },
 
