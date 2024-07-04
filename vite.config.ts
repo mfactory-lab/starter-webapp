@@ -218,9 +218,9 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       },
     },
 
-    // ssr: {
-    //   noExternal: ['workbox-window'],
-    // },
+    ssr: {
+      noExternal: ['workbox-window'],
+    },
 
     // https://github.com/vitest-dev/vitest
     test: {
