@@ -1,21 +1,21 @@
-import path, { resolve } from 'node:path'
 import fs from 'node:fs'
-import { defineConfig, loadEnv } from 'vite'
-import Vue from '@vitejs/plugin-vue'
-import Layouts from 'vite-plugin-vue-layouts'
-import { VitePWA } from 'vite-plugin-pwa'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import WebfontDownload from 'vite-plugin-webfont-dl'
-import VueRouter from 'unplugin-vue-router/vite'
-import Imagemin from 'unplugin-imagemin/vite'
-import Icons from 'unplugin-icons/vite'
-import IconsResolver from 'unplugin-icons/resolver'
-import { FileSystemIconLoader } from 'unplugin-icons/loaders'
-import { VueRouterAutoImports } from 'unplugin-vue-router'
+import path from 'node:path'
 import { quasar } from '@quasar/vite-plugin'
-import { unheadVueComposablesImports } from '@unhead/vue'
 import UnheadVite from '@unhead/addons/vite'
+import { unheadVueComposablesImports } from '@unhead/vue'
+import Vue from '@vitejs/plugin-vue'
+import AutoImport from 'unplugin-auto-import/vite'
+import { FileSystemIconLoader } from 'unplugin-icons/loaders'
+import IconsResolver from 'unplugin-icons/resolver'
+import Icons from 'unplugin-icons/vite'
+import Imagemin from 'unplugin-imagemin/vite'
+import Components from 'unplugin-vue-components/vite'
+import { VueRouterAutoImports } from 'unplugin-vue-router'
+import VueRouter from 'unplugin-vue-router/vite'
+import { defineConfig, loadEnv } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
+import Layouts from 'vite-plugin-vue-layouts'
+import WebfontDownload from 'vite-plugin-webfont-dl'
 import generateSitemap from 'vite-ssg-sitemap'
 import { version } from './package.json'
 
@@ -29,7 +29,8 @@ export default defineConfig(({ mode, isSsrBuild }) => {
 
     resolve: {
       alias: {
-        '~/': `${resolve(__dirname, 'src')}/`,
+        'lodash': 'lodash-es',
+        '~/': `${path.resolve(import.meta.dirname, 'src')}/`,
       },
     },
 
@@ -105,11 +106,9 @@ export default defineConfig(({ mode, isSsrBuild }) => {
           }),
         ],
       }),
-
       // https://github.com/quasarframework/quasar
       quasar({
         autoImportComponentCase: 'kebab',
-        sassVariables: './src/assets/styles/variables.scss',
         runMode: isSsrBuild ? 'ssr-server' : 'web-client',
       }),
 
@@ -120,31 +119,56 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       VitePWA({
         registerType: 'autoUpdate',
         workbox: {
-          navigateFallback: '404.html',
-          globPatterns: ['**/*.{js,css,webp,png,svg,gif,mp4,ico,woff2}'],
+        // navigateFallback: 'index.html',
+        // navigateFallbackAllowlist: [/^index.html$/],
+          navigateFallback: null,
+          globPatterns: ['**/*.{js,css,webp,png,svg,gif,ico,html,json,txt}'],
+          maximumFileSizeToCacheInBytes: 5_000_000,
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/www\.googletagmanager\.com\/gtm\.js/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'gtm',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
         },
-        includeAssets: ['**/*.{webp,png,jpg,svg,gif,ico,txt,woff2}'],
+        includeAssets: [
+          'img/apple-touch-icon.png',
+          'img/favicon.svg',
+          'img/favicon.ico',
+          'img/robots.txt',
+        ],
         manifest: {
-          name: env.VITE_APP_NAME ?? 'Starter',
-          short_name: env.VITE_APP_SHORT_NAME ?? env.VITE_APP_NAME ?? 'Starter',
-          description: env.VITE_APP_DESCRIPTION,
+        // start_url: '/?utm_source=pwa',
+          name: process.env.VITE_APP_NAME ?? 'jpool',
+          short_name: process.env.VITE_APP_SHORT_NAME ?? process.env.VITE_APP_NAME ?? 'jpool',
+          description: process.env.VITE_APP_DESCRIPTION,
           theme_color: '#ffffff',
-          display: 'minimal-ui',
+          display: 'standalone',
           icons: [
             {
-              src: 'pwa-192x192.png',
+              src: 'img/pwa-192x192.png',
               sizes: '192x192',
               type: 'image/png',
             },
             {
-              src: 'pwa-512x512.png',
+              src: 'img/pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png',
             },
             {
-              src: 'favicon.svg',
-              sizes: '50x50',
-              type: 'image/svg',
+              src: 'img/pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
               purpose: 'any maskable',
             },
           ],
@@ -169,10 +193,14 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         'vue-router',
         '@unhead/vue',
         '@vueuse/core',
+        'pinia',
+        'axios',
+        'quasar',
+        'lodash-es',
       ],
-      exclude: [
-        'vue-demi',
-      ],
+      // exclude: [
+      //   'vue-demi',
+      // ],
     },
 
     // https://github.com/antfu/vite-ssg
@@ -180,40 +208,32 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       script: 'async',
       formatting: 'minify',
       concurrency: 25,
-      crittersOptions: {
-        preload: 'swap',
+      beastiesOptions: {
+        // preload: 'swap',
         pruneSource: true,
-        reduceInlineStyles: false,
+        // reduceInlineStyles: false,
       },
-      includedRoutes(paths) {
-        const staticPaths = paths.filter(path => !path.includes(':'))
-        const dynamicPaths = [] as string[]
-        return [...staticPaths, ...dynamicPaths, '/404']
-      },
-      onPageRendered(_, renderedHTML) {
-        // support critters with base path
-        if (base !== '/') {
-          const srcDir = path.resolve('./dist')
-          const destDir = path.join('./dist', base)
-          fs.mkdirSync(destDir, { recursive: true })
-          fs.readdirSync(srcDir).forEach((item) => {
-            if (item !== path.basename(base)) {
-              const srcPath = path.join(srcDir, item)
-              const destPath = path.join(destDir, item)
-              fs.cpSync(srcPath, destPath, { recursive: true })
-            }
-          })
-        }
-        return renderedHTML
-      },
+      // includedRoutes(paths) {
+      //   console.log(paths)
+      //   return paths
+      // },
+      // onPageRendered(routePath, renderedHTML) {
+      //   console.log(`Rendering page: ${routePath}`)
+      //   const filePath = routePath === '/' ? 'index.html' : `${routePath.replace(/\/$/, '')}.html`
+      //   const destPath = path.join('./dist', filePath)
+      //   fs.mkdirSync(path.dirname(destPath), { recursive: true })
+      //   fs.writeFileSync(destPath, renderedHTML)
+      //   return renderedHTML
+      // },
       onFinished() {
-        generateSitemap({
-          hostname: env.VITE_APP_URL ?? 'http://localhost/',
-        })
-        // support critters with base path
-        if (base !== '/') {
-          fs.rmSync(path.join('./dist', base), { recursive: true, force: true })
+        // fix imagemin invalid optimization :D
+        const copyFiles = ['apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png']
+        for (const file of copyFiles) {
+          fs.copyFileSync(`./public/img/${file}`, `./dist/img/${file}`)
         }
+        generateSitemap({
+          hostname: process.env.VITE_APP_URL ?? 'http://localhost/',
+        })
       },
     },
 

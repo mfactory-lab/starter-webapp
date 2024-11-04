@@ -4,6 +4,6 @@
       Skeleton
     </div>
 
-    <q-skeleton type="toolbar" class="q-mt-sm" />
+    <q-skeleton class="q-mt-sm" />
   </div>
 </template>

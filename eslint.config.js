@@ -1,39 +1,57 @@
 import antfu from '@antfu/eslint-config'
-import oxlint from 'eslint-plugin-oxlint'
 
 export default antfu(
   {
     gitignore: true,
     stylistic: true,
     typescript: true,
-    markdown: true,
-    formatters: {
-      css: 'prettier',
+    // formatters: true,
+    prettier: true,
+    unicorn: {
+      allRecommended: true,
     },
     yaml: true,
-    toml: true,
-    vue: true,
+    isInEditor: false,
+    lessOpinionated: true,
     ignores: [
-      '**/build/**',
       '**/dist/**',
       '**/coverage/**',
-    ],
-    plugins: [
-      oxlint.configs['flat/recommended'],
     ],
   }, {
     rules: {
       'antfu/consistent-list-newline': 'off',
-      'curly': ['error', 'all'],
-      'max-statements-per-line': ['error', { max: 2 }],
+      'style/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      // 'max-statements-per-line': ['error', { max: 2 }],
+      'regexp/no-unused-capturing-group': 'off',
+      // 'curly': ['error', 'all'],
+      'no-console': 'off',
+
+      // TypeScript specific rules
+      'ts/consistent-type-definitions': ['error', 'type'],
+
+      // Vue specific rules
+      'vue/component-name-in-template-casing': ['error', 'kebab-case'],
+
+      // Node.js specific rules
       'node/prefer-global/process': 'off',
       'node/prefer-global/buffer': 'off',
-      'no-console': 'off',
-      'style/brace-style': ['error', '1tbs', { allowSingleLine: true }],
-      'toml/padding-line-between-pairs': 'off',
-      'ts/consistent-type-definitions': ['error', 'type'],
-      // only allow kebab-case in component names
-      'vue/component-name-in-template-casing': [2, 'kebab-case', { registeredComponentsOnly: false }],
+
+      // Unicorn plugin rules
+      // 'unicorn/no-array-callback-reference': 'off',
+      // 'unicorn/no-array-method-this-argument': 'off',
+      'unicorn/no-abusive-eslint-disable': 'off',
+      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/no-await-expression-member': 'off',
+      'unicorn/no-array-reduce': 'off',
+      'unicorn/no-null': 'off',
+      'unicorn/switch-case-braces': ['error', 'avoid'],
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: { kebabCase: true, pascalCase: true },
+          ignore: [/^[A-Z]+\..*$/], // e.g. README.md
+        },
+      ],
     },
   },
 )

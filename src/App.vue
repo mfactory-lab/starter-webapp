@@ -24,10 +24,6 @@ useHead({
       href: () => preferredDark.value ? `${baseURL}favicon-dark.svg` : `${baseURL}favicon.svg`,
     },
     {
-      rel: 'apple-touch-icon',
-      href: () => `${baseURL}pwa-192x192.png`,
-    },
-    {
       rel: 'mask-icon',
       href: () => `${baseURL}safari-pinned-tab.svg`,
       color: primaryColor,
